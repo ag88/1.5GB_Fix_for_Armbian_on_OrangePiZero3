@@ -84,6 +84,110 @@ static unsigned long mctl_calc_size(const struct dram_config *config)
 take note that the 1.5 GB memory size declaration is *hardcoded*, that practically makes
 this fix, hack, workaround only relevant / useful for 1.5 GB boards.
 
+## How to use
+
+To use this modified u-boot, the best practice is to start with / use an image that is known to work on 1GB / 2GB / 4GB Orange Pi Zero 3 boards.
+
+The compiled u-boot image is:
+u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
+ 
+assuming that your image SD card is mounted at /dev/sdX, you can backup your existing u-boot e.g. 
+
+```
+sudo dd if=/dev/sdX of=u-boot-backup.bin bs=1024 skip=8 count=1024
+```
+that should backup the u-boot in your device to u-boot-backup.bin
+
+then to write the modified u-boot into the SD card it is (be sure that you are writing to the correct device ! mistakes here can corrupt your existing hard disks / storage)
+```
+sudo dd if=u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin of=/dev/sdX bs=1024 seek=8
+```
+
+it may be possible to write that to an existing image file (do backup your image file beforehand)
+```
+dd if=u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin of=file.img bs=1024 seek=8 conv=notrunc
+```
+ 
+
+I've created a 'sd image u-boot patcher' uploaded here in the tools folder:
+```
+usage: sd-image-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] image uboot_bin
+
+  patch u-boot binary into image
+
+  positional arguments:
+  image image file
+  uboot_bin u-boot bin file
+
+ options:
+ -h, --help show this help message and exit
+ --nobak do not backup image
+ --ignimgsize  ignore image size check
+```
+ 
+
+you need python3 to use that 'sd image u-boot patcher'
+https://www.python.org/downloads/release/python-3123/
+
+run it as
+```
+python3 sdimage-u-boot-patcher.py imagefile.img u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
+````
+ 
+it is a console app, which means that for Windows users, it'd need to be run
+in a Cmd prompt window.
+
+note: I've not tried running this patcher script in Windows, only tested in Linux.
+
+This may help for 'Windows' users who may not have access to commands like 'dd' which is mainly available in unix, Linux.
+
+This is so that you can patch the image file directly and perhaps use Balena etcher
+
+https://etcher.balena.io/
+
+or Rufus
+
+https://rufus.ie/en/
+
+to write the image to an SD card / usb drive.
+ 
+
+In linux, it is found that the sdimage-u-boot-patcher script can actually update /dev/sdX directly. But that it it cannot determine the image size as it is a device and normally it'd need to be run as root.
+
+Hence, I've added a  --ignimgsize  ignore image size check flag for those who wanted to use it that way. e.g.
+```
+sudo python3 sdimage-u-boot-patcher.py --ignimgsize /dev/sdX u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
+```
+this is 'slightly safer' than using dd as sdimage-u-boot-patcher actually validates the image format (it look for signatures for a master boot record this can still be confused with a regular disk, and a signature for u-boot at around 8k. it would prompt that the image does not appear to be valid linux image if it either can't find the master boot record 1st sector and the u-boot signature at 8k. you can then stop the patch by pressing control-c or answering 'n' when prompted to continue. for a valid image, it also verifies that the u-boot bin file should not overwrite into the root partition
+
+## Goofy boot u-boot shell
+
+This u-boot image is compiled from the mainline [u-boot sources](https://source.denx.de/u-boot/u-boot)
+at release 2024.04. It requires that your distribution image uses /boot/boot.scr or /boot/boot.cmd
+in the root filesystem to boot Linux. /boot/boot.scr or /boot/boot.cmd are actually scripts that
+contains the u-boot commands to load and boot the Linux kernel along with various dependent
+stuff e.g. device tree and ramdisk.
+
+Some distributions has an invalid /boot/boot.scr or /boot/boot.cmd and some other has *customized u-boot* that uses a *customized* boot.scr or boot.cmd file. In those cases you may be dropped into the *u-boot command shell* ! you can try typing '*help*'
+
+that can be quite intimidating to work in the u-boot shell with all that rather complex options.
+one way to revert is to restore your backup as covered prior.
+
+for those who would want to venture further google / bing is your friend to search for some aid:
+some links I googled:
+
+https://docs.u-boot.org/en/latest/usage/index.html
+
+This is practically the commands to start linux, but that there could be 'surprises' may not work.
+https://linux-sunxi.org/U-Boot#Booting_with_boot.cmd
+
+https://krinkinmu.github.io/2023/08/12/getting-started-with-u-boot.html
+etc.
+
+## No warranty
+
+and note this is caveat emptor (let the user beware, *use at your own risk*), there is no assurance if after all it fixes anything or break other things.
+
 
 ## References
 - [Armbian](https://www.armbian.com/)
