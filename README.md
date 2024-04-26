@@ -54,7 +54,7 @@ dram correctly.
 
 The (sd card) image for linux distributions for linux-sunxi (or practically on Allwinner SOCs) mostly mostly stick with this format
 
-- 0 - 7KB blank reserved
+- 0 - 7KB blank reserved (actually there is somethin at 0, MBR master boot record and partition table)
 - 8KB - 1MB - 4MB U-boot
 - 4MB - rest of image/sd/mmc card Linux and your distribution (e.g. Ubuntu / Debian etc)
 
