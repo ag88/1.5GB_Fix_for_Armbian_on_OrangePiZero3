@@ -18,8 +18,11 @@ Currently, as of Apr 24, various volunteers in the Armbian community has worked 
 [Orange Pi Zero 3](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html) board
 and managed to make a port of Armbian (Debian or Ubuntu) Linux distributions run on Orange Pi Zero 3.
 A relevant page with links to the images is here
+
 https://www.armbian.com/orange-pi-zero-3/
+
 A relevant discussion thread about the board in Armbian forum is here
+
 https://forum.armbian.com/topic/29202-orange-pi-zero-3/
 
 The port/image is mostly based on Linux 6.6 kernels (and u-boot) and up and has various mainline support for Orange Pi Zero 3
