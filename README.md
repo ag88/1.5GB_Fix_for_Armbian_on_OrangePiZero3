@@ -56,7 +56,7 @@ The (sd card) image for linux distributions for linux-sunxi (or practically on A
 
 - 0 - 7KB blank reserved
 - 8KB - 1MB - 4MB U-boot
-- 4MB - rest of image/sd/mmc card
+- 4MB - rest of image/sd/mmc card Linux and your distribution (e.g. Ubuntu / Debian etc)
 
 The idea here is to simply replace the U-boot image in current Linux distribution images. That is about the only way this 'hack'
 works.
