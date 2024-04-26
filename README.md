@@ -10,6 +10,8 @@ supercede this and make this fix redundant.
 
 ## Prologue
 
+TLDR,. If you want to use Armbian with Orange Pi Zero 3, get 1GB, 2GB or 4GB boards, and you probably won't need this or any hacks.
+
 ### Background
 
 Currently, as of Apr 24, various volunteers in the Armbian community has worked Armbian on
