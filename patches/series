@@ -1,3 +1,6 @@
 atf-build-script.patch
 u-boot-build-script.patch
 1.5GB_OPZ3_fix.patch
+THS_fix.patch
+enable_GPU.patch
+upd_uboot_rel.patch

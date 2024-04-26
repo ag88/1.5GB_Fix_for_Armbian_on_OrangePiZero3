@@ -1,0 +1,14 @@
+Index: 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/Makefile
+===================================================================
+--- 1.5GB_Fix_for_Armbian_on_OrangePiZero3.orig/u-boot/Makefile
++++ 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/Makefile
+@@ -1872,7 +1872,8 @@ endef
+ # Store (new) UBOOTRELEASE string in include/config/uboot.release
+ include/config/uboot.release: include/config/auto.conf FORCE
+ 	$(call filechk,uboot.release)
+-
++	sed "s/dirty/FixOPiZero3_1.5G/" $@ > $@.t
++	mv $@.t $@
+ 
+ # Things we need to do before we recursively start building the kernel
+ # or the modules are listed in "prepare".
