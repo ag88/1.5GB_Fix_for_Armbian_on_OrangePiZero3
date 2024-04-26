@@ -64,6 +64,27 @@ The (sd card) image for linux distributions for linux-sunxi (or practically on A
 The idea here is to simply replace the U-boot image in current Linux distribution images. That is about the only way this 'hack'
 works.
 
+### the hack
+
+The essence of this fix / hack / workaround is in
+```
+file: u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
+static unsigned long mctl_calc_size(const struct dram_config *config)
+{       
+        u8 width = config->bus_full_width ? 4 : 2;
+        
+        /* 8 banks */ 
+        unsigned long long memsz = (1ULL << (config->cols + config->rows + 3)) * width * config->ranks;    
+        log_info("detected memsize %d M\n", (int)(memsz >> 20));
+        /* 1.5 GB hardcoded */
+        memsz = 2048UL * 1024UL * 1024UL * 3 / 4;
+        return memsz;
+}
+```
+take note that the 1.5 GB memory size declaration is *hardcoded*, that practically makes
+this fix, hack, workaround only relevant / useful for 1.5 GB boards.
+
+
 ## References
 - [Armbian](https://www.armbian.com/)
 - [Orange Pi Zero 3 board](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html)

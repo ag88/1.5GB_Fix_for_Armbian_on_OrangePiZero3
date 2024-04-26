@@ -1,0 +1,17 @@
+Index: 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
+===================================================================
+--- 1.5GB_Fix_for_Armbian_on_OrangePiZero3.orig/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1350,7 +1350,11 @@ static unsigned long mctl_calc_size(cons
+ 	u8 width = config->bus_full_width ? 4 : 2;
+ 
+ 	/* 8 banks */
+-	return (1ULL << (config->cols + config->rows + 3)) * width * config->ranks;
++	unsigned long long memsz = (1ULL << (config->cols + config->rows + 3)) * width * config->ranks;
++	log_info("detected memsize %d M\n", (int)(memsz >> 20));
++	/* 1.5 GB hardcoded */
++	memsz = 2048UL * 1024UL * 1024UL * 3 / 4;
++	return memsz;
+ }
+ 
+ static const struct dram_para para = {
