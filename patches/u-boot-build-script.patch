@@ -1,0 +1,10 @@
+Index: 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/build.sh
+===================================================================
+--- /dev/null
++++ 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/build.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/bash
++#export BL31=../arm-trusted-firmware/build/sun50i_h616/release/bl31.bin
++export BL31=../arm-trusted-firmware/build/sun50i_h616/debug/bl31.bin
++make orangepi_zero3_defconfig
++CROSS_COMPILE=aarch64-linux-gnu- make

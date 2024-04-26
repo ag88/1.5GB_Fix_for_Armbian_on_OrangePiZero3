@@ -1,0 +1,8 @@
+arm trusted firmware build script
+Index: 1.5GB_Fix_for_Armbian_on_OrangePiZero3/arm-trusted-firmware/arm-trust-fw-make.sh
+===================================================================
+--- /dev/null
++++ 1.5GB_Fix_for_Armbian_on_OrangePiZero3/arm-trusted-firmware/arm-trust-fw-make.sh
+@@ -0,0 +1,2 @@
++make CROSS_COMPILE=aarch64-linux-gnu- PLAT=sun50i_h616 ERRATA_A53_855873=1 ERRATA_A53_1530924=1 DEBUG=1
++
