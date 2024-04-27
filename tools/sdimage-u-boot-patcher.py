@@ -1,28 +1,31 @@
 #!/usr/bin/env python3
-# usage: image-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] image uboot_bin
-# 
-# patch u-boot binary into image
-# 
-# positional arguments:
-#   image       image file
-#   uboot_bin   u-boot bin file
-# 
-# options:
-#   -h, --help  show this help message and exit
-#   --nobak     do not backup image
-#   --ignimgsize  ignore image size check
+#usage: sdimage-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] [--bkname BKNAME] image uboot_bin
+#
+#patch u-boot binary into image
+#
+#positional arguments:
+#  image            image file
+#  uboot_bin        u-boot bin file
+#
+#options:
+#  -h, --help       show this help message and exit
+#  --nobak          do not backup u-boot SPL from image
+#  --ignimgsize     ignore image size check
+#  --bkname BKNAME  u-boot SPL backup file name
 #
 import sys
 import os
-from shutil import copyfile
 import argparse
 import struct
 import datetime
 from pathlib import Path
 
 parser = argparse.ArgumentParser(description='patch u-boot binary into image')
-parser.add_argument("--nobak", help="do not backup image", required=False, action='store_true')
-parser.add_argument("--ignimgsize", help="ignore image size check", required=False, action='store_true')
+parser.add_argument("--nobak", help="do not backup u-boot SPL from image", required=False, action='store_true')
+parser.add_argument("--ignimgsize", help="ignore image size check", required=False,\
+    action='store_true')
+parser.add_argument("--bkname", help="u-boot SPL backup file name", required=False,\
+    default="u-boot-SPL-backup.bin", action='store')
 parser.add_argument("image", help="image file", nargs=1, action='store')
 parser.add_argument("uboot_bin", help="u-boot bin file", nargs=1, action='store')
 
@@ -140,31 +143,48 @@ if sz_uboot > uboot_szlimit*1024:
         if ans is not None and not ans[0].lower() == 'y':
             sys.exit(1)
 
-#backup the image file
-if sz_image == 0:
-    print("unable to determine image size of {}, skipping backup".\
+#backup the u-boot from the image
+if not validimage :
+    print("unable to determine if image {} is valid, skipping backup".\
         format(cmdargs.image[0]))
-elif not cmdargs.nobak and sz_image > 0:
+elif not cmdargs.nobak and validimage:
     imname = cmdargs.image[0]
-    ans = input("backup image file {}? (y/n)")
-    if ans is not None and ans[0].lower() == 'y':
-        if imname.find(".img") >= 0 or imname.find(".IMG") > 0:
-            bkname = imname[0:-4] + "backup" + imname[-4:]
-        else:
-            bkname = imname + ".bak"
-        if Path(bkname).exists():
-            print("image backup file {} exists, please rename or remove".format(bkname))
-            sys.exit(1)
+    bkname = cmdargs.bkname
+    if Path(bkname).exists():
+        print("u-boot backup file {} exists, please rename or remove".format(bkname))
+        sys.exit(1)
+    with open(imname, mode='rb') as imf:
+        buffer = None
+        count = (uboot_szlimit-1)*1024
         try:
-            copyfile(imname, bkname)
-            print("image file {} backup to {}".format(imname, bkname))
+            # slurp the whole u-boot image backup into buffer 
+            imf.seek(8192)
+            buffer = imf.read(count)
         except IOError as e:
-            print("Unable to copy file. %s" % e)
+            print("Unable read data from image file {}".format(imname))
+            print(e)
             sys.exit(1)
         except Exception as e:
+            print("Unable read data from uboot bin file {}".format(imname))
             print('error: ' + e, sys.exc_info())
             sys.exit(1)
+        if not buffer == None:
+            try:
+                with open(bkname, mode='wb') as ubf:
+                    ubf.write(buffer)
+                    ubf.flush()
+                print("uboot from image file {} backup into {} file"\
+                    .format(imname, bkname))
+            except IOError as e:
+                print("Unable write data to backup file {}".format(bkname))
+                print(e)
+                sys.exit(1)
+            except Exception as e:
+                print("Unable write data to backup file {}".format(bkname))
+                print('error: ' + e, sys.exc_info())
+                sys.exit(1)
 
+#patch u-boot into image file
 with open(cmdargs.image[0], mode='rb+') as imf:
     buffer = None
     with open(cmdargs.uboot_bin[0], mode='rb') as ubf:
