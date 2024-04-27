@@ -109,7 +109,7 @@ dd if=u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin of=file.img bs=1024 see
 ```
  
 
-I've created a 'sd image u-boot patcher' uploaded here in the tools folder:
+I've created a 'sd image u-boot patcher' uploaded here in the [tools](tools) folder:
 ```
 usage: sdimage-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] [--bkname BKNAME] image uboot_bin
 
