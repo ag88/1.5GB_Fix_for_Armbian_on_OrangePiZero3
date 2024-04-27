@@ -89,7 +89,7 @@ this fix, hack, workaround only relevant / useful for 1.5 GB boards.
 To use this modified u-boot, the best practice is to start with / use an image that is known to work on 1GB / 2GB / 4GB Orange Pi Zero 3 boards.
 
 The compiled u-boot image is:
-u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
+[u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin](u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin)
  
 assuming that your image SD card is mounted at /dev/sdX, you can backup your existing u-boot e.g. 
 
