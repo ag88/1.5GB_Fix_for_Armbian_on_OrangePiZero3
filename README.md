@@ -111,18 +111,19 @@ dd if=u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin of=file.img bs=1024 see
 
 I've created a 'sd image u-boot patcher' uploaded here in the tools folder:
 ```
-usage: sd-image-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] image uboot_bin
+usage: sdimage-u-boot-patcher.py [-h] [--nobak] [--ignimgsize] [--bkname BKNAME] image uboot_bin
 
-  patch u-boot binary into image
+patch u-boot binary into image
 
-  positional arguments:
-  image image file
-  uboot_bin u-boot bin file
+positional arguments:
+  image            image file
+  uboot_bin        u-boot bin file
 
- options:
- -h, --help show this help message and exit
- --nobak do not backup image
- --ignimgsize  ignore image size check
+options:
+  -h, --help       show this help message and exit
+  --nobak          do not backup u-boot SPL from image
+  --ignimgsize     ignore image size check
+  --bkname BKNAME  u-boot SPL backup file name
 ```
  
 
@@ -132,8 +133,15 @@ https://www.python.org/downloads/release/python-3123/
 run it as
 ```
 python3 sdimage-u-boot-patcher.py imagefile.img u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
-````
+```
  
+This python script will first extract and backup the u-boot bin image from the image into
+**u-boot-SPL-backup.bin** in the current directory. This helps in case something goofs up,
+you can try restoring it with
+```
+python3 sdimage-u-boot-patcher.py --nobak imagefile.img u-boot-SPL-backup.bin
+```
+
 it is a console app, which means that for Windows users, it'd need to be run
 in a Cmd prompt window.
 
@@ -158,6 +166,14 @@ Hence, I've added a  --ignimgsize  ignore image size check flag for those who wa
 ```
 sudo python3 sdimage-u-boot-patcher.py --ignimgsize /dev/sdX u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
 ```
+
+This python script will first extract and backup the u-boot bin image from the image into
+**u-boot-SPL-backup.bin** in the current directory. This helps in case something goofs up,
+you can try restoring it with
+```
+sudo python3 sdimage-u-boot-patcher.py --ignimgsize --nobak /dev/sdX u-boot-SPL-backup.bin
+```
+
 this is 'slightly safer' than using dd as sdimage-u-boot-patcher actually validates the image format (it look for signatures for a master boot record this can still be confused with a regular disk, and a signature for u-boot at around 8k. it would prompt that the image does not appear to be valid linux image if it either can't find the master boot record 1st sector and the u-boot signature at 8k. you can then stop the patch by pressing control-c or answering 'n' when prompted to continue. for a valid image, it also verifies that the u-boot bin file should not overwrite into the root partition
 
 ## Goofy boot u-boot shell
