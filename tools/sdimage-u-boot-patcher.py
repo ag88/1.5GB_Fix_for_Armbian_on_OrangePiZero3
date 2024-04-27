@@ -144,9 +144,10 @@ if sz_uboot > uboot_szlimit*1024:
             sys.exit(1)
 
 #backup the u-boot from the image
-if not validimage :
-    print("unable to determine if image {} is valid, skipping backup".\
+if not validimage and not cmdargs.nobak :
+    print("unable to determine if image {} is valid, unable to backup u-boot from image not patchinng".\
         format(cmdargs.image[0]))
+    sys.exit(1)
 elif not cmdargs.nobak and validimage:
     imname = cmdargs.image[0]
     bkname = cmdargs.bkname
