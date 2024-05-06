@@ -1,0 +1,43 @@
+Index: 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
+===================================================================
+--- 1.5GB_Fix_for_Armbian_on_OrangePiZero3.orig/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ 1.5GB_Fix_for_Armbian_on_OrangePiZero3/u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1345,12 +1345,37 @@ static void mctl_auto_detect_dram_size(c
+ 	}
+ }
+ 
++
++bool mctl_mem_matches_top(unsigned long long offset)
++{
++        static const unsigned value= 0xaa55aa55;
++
++#define CONFIG_SYS_SDRAM_BASE 0
++        /* Take last usable memory address */
++        offset -= sizeof(unsigned);
++        dsb();
++        /* Set zero at last usable memory address */
++        writel(0, (ulong)CONFIG_SYS_SDRAM_BASE + offset);
++        dsb();
++        /* Set other value at last usable memory address */
++        writel(value, (ulong)CONFIG_SYS_SDRAM_BASE + offset);
++        dsb();
++        /* Check if the same value is actually observed when reading back */
++        return readl((ulong)CONFIG_SYS_SDRAM_BASE + offset) == value;
++}
++
+ static unsigned long mctl_calc_size(const struct dram_config *config)
+ {
+ 	u8 width = config->bus_full_width ? 4 : 2;
+ 
+ 	/* 8 banks */
+-	return (1ULL << (config->cols + config->rows + 3)) * width * config->ranks;
++	unsigned long long memsz = (1ULL << (config->cols + config->rows + 3)) * width * config->ranks;
++	log_info("detected memsize %d M\n", (int)(memsz >> 20));
++
++        /* Fix size if last usable memory address is not valid */
++        if (!mctl_mem_matches_top(memsz))
++            memsz = (memsz * 3) / 4;
++	return memsz;
+ }
+ 
+ static const struct dram_para para = {
