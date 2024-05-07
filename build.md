@@ -58,3 +58,32 @@ if you do not install quilt, you can apply the patches in [patches](patches) dir
   If the build goes well you should find **u-boot-sunxi-with-spl.bin** in u-boot folder.
   That is the u-boot binary
 
+## Other notes
+
+### Quilt
+
+This repository is managed using quilt
+https://wiki.debian.org/UsingQuilt
+
+if you want to rollback the patches you can run
+```
+quilt pop -a
+```
+
+### Making edits
+
+```
+quilt series
+quilt push patches/1.5GB_OPZ3_fix.patch
+vi u-boot/arch/arm/mach-sunxi/dram_sun50i_h616.c <- or use any editor you prefer
+quilt refresh <- note this would update patches/1.5GB_OPZ3_fix.patch
+quilt push -a <- this applies the remaining of the patches
+# compile it
+cd arm-trusted-firmware
+bash arm-trust-fw-make.sh <- normally only need to be done once, not necessary if that is already built prior
+cd u-boot
+bash build.sh                           
+# test it if necessary
+# you can rollback all the patches using 
+# quilt pop -a
+```
