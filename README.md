@@ -136,7 +136,7 @@ run it as
 python3 sdimage-u-boot-patcher.py imagefile.img u-boot-sunxi-with-spl-2024.04-FixOPiZero3_1.5G.bin 
 ```
  
-This python script will first extract and backup the u-boot bin image from the image into
+This python script will first extract and backup the u-boot binary from the image into
 **u-boot-SPL-backup.bin** in the current directory. This helps in case something goofs up,
 you can try restoring it with
 ```
